@@ -24,6 +24,7 @@ class ViewController():
                 self.on_click_register,
                 self.on_click_login,
                 self.on_click_logout)
+        self.screens.home_screen()
 
         self.camera = cv2.VideoCapture(0)
 
@@ -43,13 +44,20 @@ class ViewController():
 
         self.screens.registering_screen()
 
+
     def on_complete_recording(self):
         print("Finshed registering")
+
         self.recording = False
-        self.auth.register("Austin", self.recording_frames)
+        self.auth.register(
+                self.screens.get_entry(),
+                self.recording_frames)
         self.recording_frames = []
 
+        print("Registered as {}".format(self.screens.get_entry()))
+
         self.screens.home_screen()
+
 
     def match(self):
         if self.auth.can_match():
@@ -99,12 +107,13 @@ class ViewController():
 
         if self.recording:
             self.recording_frames.append(image)
-            print(f"Recording Frame: {len(self.recording_frames)}")
-            # show progress, update text
+            print("Recording Frame: {}".format(
+                len(self.recording_frames)))
+            # show and update progress
             self.screens.update_msg_text(
-                    "Registering... {}/{}".format(
-                        len(self.recording_frames),
-                        self.batch_size
+                "Registering... {}/{}".format(
+                    len(self.recording_frames),
+                    self.batch_size
                 ))
 
             if (len(self.recording_frames) == self.batch_size):
